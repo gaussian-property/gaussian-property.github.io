@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="GaussianProperty: Integrating Physical Properties to 3D Gaussians with LMMs. A training-free framework that assigns physical properties of materials to 3D Gaussians, enabling applications in physics-based dynamic simulation and robotic grasping.">
+  <meta name="keywords" content="GP, GaussianProperty, 3D Gaussian, dynamic simulation, robotic grasping, physical properties, material properties">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GaussianProperty: Integrating Physical Properties to 3D Gaussians with LMMs</title>
+
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WKK8T3Q6');
+  </script>
+    <!--/ Google Tag Manager -->
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <!-- <link rel="stylesheet" href="./static/css/bulma-slider.min.css"> -->
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <!-- <script src="./static/js/bulma-slider.min.js"></script> -->
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://github.com/orgs/gaussian-property/repositories">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://3dsmaps.github.io/" target="_blank">
+            3DSMaps
+          </a>
+          <a class="navbar-item" href="https://davidqiu1993.github.io/poddp-paper/" target="_blank">
+            PODDP
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <img src="static/images/logo_GaussianProperty.png" width="60%" alt="GaussianProperty">
+          <h1 class="title is-1 publication-title">Integrating Physical Properties to 3D Gaussians with LMMs</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.hkust-gz.edu.cn/" target="_blank">Xinli Xu</a><sup>1*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.hkust-gz.edu.cn/" target="_blank">Wenhang Ge</a><sup>1*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://davidqiu.com" target="_blank">Dicong Qiu</a><sup>1*</sup>,
+            </span>
+            <span class="author-block">ZhiFei Chen<sup>1</sup>,</span>
+            <span class="author-block">Dongyu Yan<sup>1</sup>,</span>
+            <span class="author-block">Zhuoyun LIU<sup>1</sup>,</span>
+            <span class="author-block">Haoyu Zhao<sup>1</sup>,</span>
+            <span class="author-block">HanFeng Zhao<sup>3</sup>,</span>
+            <span class="author-block">Shunsi Zhang<sup>3</sup>,</span>
+            <span class="author-block">
+              <a href="https://junweiliang.me" target="_blank">Junwei Liang</a><sup>1,2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.yingcong.me" target="_blank">Ying-Cong Chen</a><sup>1,2&#8224;</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>HKUST(GZ)</span> 
+            <span class="author-block"><sup>2</sup>HKUST</span> 
+            <span class="author-block"><sup>3</sup>Quwan</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <p><sup>*</sup>Equal Contribution, <sup>&#8224;</sup>Corresponding Authors</p>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <span class="link-block">
+                <a href="static/files/GaussianProperty.pdf" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://youtu.be/" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <!--
+              <span class="link-block">
+                <a href="#" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              -->
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://drive.google.com/drive/folders/1rc7X_CCO3WPuK5Cux92p9dbpQqVsdTAy"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+
+        <!-- Grasping Video Section. -->
+         
+        <div class="field">
+          <p class="control has-icons-left">
+            <span class="select is-rounded is-medium" style="width: 100%;">
+              <select id="grasping-video-select" style="width: 100%;">
+                <option selected>001_Mug</option>
+                <option>002_PaperCup</option>
+                <option>003_GlassBattledWater</option>
+                <option>004_GolfBall</option>
+                <option>005_Hammer</option>
+                <option>006_KraftPaperRoll</option>
+                <option>007_Bar</option>
+                <option>008_RoboticGripper</option>
+                <option>009_PlasticBottle</option>
+                <option>010_PlasticBottledWater</option>
+                <option>011_PlasticCup</option>
+                <option>012_ChipsCan</option>
+                <option>013_RedWine</option>
+                <option>014_SteelKettle</option>
+                <option>015_Straw</option>
+                <option>016_WoodBlock</option>
+              </select>
+            </span>
+            <span class="icon is-small is-left">
+              <i class="fas fa-video"></i>
+            </span>
+          </p>
+        </div>
+        <!--/ Grasping Video Section. -->
+
+        <!-- Grasping Video. -->
+        <div>
+          <video id="grasping-video" poster="" autoplay muted loop height="100%">
+            <source src="static/videos/grasping/001_Mug_out.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <!--/ Grasping Video. -->
+
+        <h2 class="subtitle has-text-centered">
+        </br>
+          GaussianProperty can <b>zero-shot</b> estimate the <b>lower and upper bounds</b> along <b>optimal</b> values of grasping forces for <b>multi-part</b> objects grasping.
+        </h2>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item">
+          <video poster="" autoplay muted loop height="100%">
+            <source src="static/videos/dynamics/001_PaperCup_out.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" autoplay muted loop height="100%">
+            <source src="static/videos/dynamics/002_TrashBin_out.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" autoplay muted loop height="100%">
+            <source src="static/videos/dynamics/003_Cushion_out.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video poster="" autoplay muted loop height="100%">
+            <source src="static/videos/dynamics/004_Stool_out.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+    </div>
+  </div>
+</section>
+<h2 class="subtitle has-text-centered">
+</br>
+GaussianProperty can reconstruct <b>multi-part</b> objects from <b>real world</b>, <b>zero-shot</b> estimate their physical properties, and generate corresponding <b>deformation dynamics</b> in simulation.
+</h2>
+
+
+<!-- Abstract. -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+
+        <!-- Abstract Content. -->
+        <div class="content has-text-justified">
+          <p>
+            Estimating physical properties for visual data is a crucial task in computer vision, graphics, and robotics, underpinning applications such as augmented reality, physical simulation, and robotic grasping. However, this area remains under-explored due to the inherent ambiguities in physical property estimation.
+            To address these challenges, we introduce <b>GaussianProperty</b>, a training-free framework that assigns physical properties of materials to 3D Gaussians. Specifically, we integrate the segmentation capability of SAM with the recognition capability of GPT-4V(ision) to formulate a global-local physical property reasoning module for 2D images. Then we project the physical properties from multi-view 2D images to 3D Gaussians using a voting strategy.
+            We demonstrate that 3D Gaussians with physical property annotations enable applications in physics-based dynamic simulation and robotic grasping.
+            For physics-based dynamic simulation, we leverage the Material Point Method (MPM) for realistic dynamic simulation.
+            For robot grasping, we develop a grasping force prediction strategy that estimates a safe force range required for object grasping based on the estimated physical properties.
+            Extensive experiments on material segmentation, physics-based dynamic simulation, and robotic grasping validate the effectiveness of our proposed method, highlighting its crucial role in understanding physical properties from visual data.
+          </p>
+        </div>
+        <!--/ Abstract Content. -->
+
+        <!-- Introduction Video. -->
+        <!-- <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div> -->
+        <!--/ Introduction Video. -->
+
+        <!-- Teaser -->
+        <img src="static/images/teaser.png" alt="Gaussian Property Architecture">
+        <!--/ Teaser -->
+
+      </div>
+    </div>
+  </div>
+</section>
+<!--/ Abstract. -->
+
+
+<!-- GaussianProperty. -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">GaussianProperty</h2>
+    
+    <!-- Illustration -->
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <p>
+            <b>GausssianProperty</b> initially leverages SAM to get the segmentation map of the object. Then the original images and the masks are sent to the foundation models like GPT-4V(ision) to get the corresponding physical properties by inquiring the material candidates. After acquiring physical properties from 2D images, we using a multi-view approach and a voting strategy to add physical properties to the reconstruction 3D Gaussians.
+          </p>
+          <div>
+            <img src="static/images/gp_pipeline.png" alt="GaussianProperty">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/ Illustration -->
+
+    <!-- Part-Level Segmentation. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-4">Part-Level Segmentation</h2>
+          <p>
+            Given a well-reconstructed 3D Gaussian representation, our objective is to attribute physical properties to each Gaussian. 
+            Understanding an object's physical properties requires delving into the characteristics of its individual parts, as each part may present unique attributes. Considering this, we utilize SAM for image segmentation, adeptly predicts masks with precise boundaries that capture whole, part, and subpart levels, thereby reflecting the object's hierarchical semantic structure.
+            In this work, we emphasize the significance of part-level information, which enables us to dissect an object into its constituent parts. This approach facilitates a more accurate and exhaustive comprehension of the physical properties of visual data.
+            Our method not only harnesses the semantic stratification provided by SAM but also actively integrates it to remedy the ambiguity arising from objects possessing multiple physical attributes.
+          </p>
+          <img src="static/images/part_level_segmentation.png" alt="Part-level Segmentation">
+        </div>
+      </div>
+    </div>
+    <!--/ Part-Level Segmentation. -->
+
+    <!-- Physics Property Matching. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-4">Physics Property Matching</h2>
+          <p>
+            After achieving precise part-level semantic segmentation, we match the segmented parts with their corresponding physical properties. A material candidates list is established with 15 ubiquitous material families and more than 600 materials, integral to everyday objects and structures. A global-to-local chain-of-thought (CoT) is utilized to assist GPT-4V in recognizing the material properties of the object, followed by a Gradual Prompt Guidance to help the model progressively build up understanding of the entire object and discern the association between its parts and the whole.
+          </p>
+          <img src="static/images/gpt_prompting.png" alt="GPT Prompting">
+        </div>
+      </div>
+    </div>
+    <!--/ Physics Property Matching. -->
+
+  </div>
+</section>
+<!--/ Gaussian Property. -->
+
+
+<!-- Downstream Applications -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Downstream Applications</h2>
+    <div class="columns is-centered">
+
+      <!-- Generative Dynamics. -->
+      <div class="column">
+        <h3 class="title is-4">Generative Dynamics</h3>
+        <div class="content">
+          <img src="static/images/app_generative_dynamics.png" alt="Generative Dynamics">
+          <p>
+            Physical simulation is a crucial application of our method because it allows us to directly add all predicted physical properties to the Gaussian points without the need for manual querying and annotation. This integration speeds up dynamic rendering significantly. We present a potential downstream task of 3D Gaussians with physical property, i.e., the generative dynamics. By imposing force, the 3D Gaussians generate corresponding motion. For example, in the first row, we applied a top-down force, the chair exhibited a movement corresponding to the applied force.
+          </p>
+        </div>
+      </div>
+      <!--/ Generative Dynamics. -->
+
+      <!-- Robot Grasping. -->
+      <div class="column">
+        <h3 class="title is-4">Robot Grasping</h3>
+        <div class="content">
+          <img src="static/images/app_robot_grasping.png" alt="Robot Grasping">
+          <p>
+            Robot Grasping is a downstream application of GaussianProperty. We propose to leverage GaussianProperty on the estimation of an optimal grasping force applied by the robotic gripper that is sufficient to lift the target object without slipping while remaining below a threshold to prevent damage or deformation. To evaluate the effectiveness and performance of our proposed method, we collect 16 objects composed of diverse materials, and implemented three robot grasping baselines with fixed grasping forces, which are widely adopted force-sensitive grasping strategies in robotics.
+          </p>
+        </div>
+      </div>
+      <!--/ Robot Grasping. -->
+
+    </div>
+  </div>
+</section>
+<!--/ Downstream Applications -->
+
+
+<!-- Experiment Results. -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Experiment Results</h2>
+
+    <!-- Baseline Comparison. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h3 class="title is-4">Baseline Comparison</h3>
+        <div class="content">
+          <p>
+            We compare our method with NeRF2Physics on material segmentation across different categories on the ABO and the MVImgNet datasets. Our method achieves a more comprehensive and accurate understanding of the object, as well as a more precise material segmentation.
+          </p>
+          <img src="static/images/exp_seg_comparisons.jpg" alt="Baseline Comparison">
+        </div>
+      </div>
+    </div>
+    <!--/ Baseline Comparison. -->
+
+    <!-- Ablation on Frequency-based Voting. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h3 class="title is-4">Ablation on Frequency-based Voting</h3>
+        <div class="content">
+          <p>
+            Frequency-based voting ensures consistency and reliability in the predicted properties by effectively aggregating information from different viewpoints, minimizing errors, and enhancing overall prediction accuracy.
+          </p>
+          <img src="static/images/exp_voting_ablation.png" alt="Ablation on Frequency-based Voting">
+        </div>
+      </div>
+    </div>
+    <!--/ Ablation on Frequency-based Voting. -->
+
+    <!-- Hardness Estimation. -->
+    <div class="columns is-centered">
+      <div class="column">
+        <h3 class="title is-4">Hardness Estimation</h3>
+        <div class="content">
+          <p>
+            We qualitatively compare our method with NeRF2Physics on hardness estimation. Our method provides more accurate hardness prediction with clear boundaries.
+          </p>
+          <img src="static/images/exp_hardness_est.jpg" alt="Hardness Estimation">
+        </div>
+      </div>
+    </div>
+    <!--/ Hardness Estimation. -->
+
+  </div>
+</section>
+<!--/ Experiment Results. -->
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{xu2024gaussianproperty,
+      title={GaussianProperty: Integrating Physical Properties to 3D Gaussians with LMMs}, 
+      author={Xinli Xu and Wenhang Ge and Dicong Qiu and ZhiFei Chen and Dongyu Yan and Zhuoyun LIU and Haoyu Zhao and HanFeng Zhao and Shunsi Zhang and Junwei Liang and Ying-Cong Chen},
+      year={2024},
+}</code></pre>
+</div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a href="https://www.hkust-gz.edu.cn/" target="_blank">
+        <img src="static/images/logo_hkustgz.png" alt="HKUST(GZ)" style="height:50px; margin:20px;">
+      </a>
+      <!-- <a href="https://jacobi.ai/" target="_blank">
+        <img src="static/images/logo_jacobi.png" alt="Jacobi.ai" style="height:50px; margin:20px;">
+      </a> -->
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website is built with <a href="https://github.com/nerfies/nerfies.github.io">this template</a>.
+          </p>
+          <p>
+            Copyright (C) 2024, Dicong Qiu. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Initialize grasping video section
+  $('#grasping-video-select').change(function() {
+    video_prefix = $(this).val();
+    $('#grasping-video source').attr('src', 'static/videos/grasping/' + video_prefix + '_out.mp4');
+    $('#grasping-video')[0].load();
+    $('#grasping-video')[0].play();
+  });
+</script>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WKK8T3Q6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!--/ Google Tag Manager (noscript) -->
+
+</body>
+</html>
