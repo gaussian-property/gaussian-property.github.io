@@ -1,6 +1,6 @@
 # Gaussian Property
 
-This is the repository that contains source code for the [Gaussian Property Homepage](https://gaussian-property.github.io).
+This is the repository that contains source code for the [Gaussian Property Homepage(ICCV2025)](https://gaussian-property.github.io).
 
 
 ## Citation
